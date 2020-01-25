@@ -16,7 +16,7 @@ const typeDefs = gql`
   type TopOccurencesOf{
     emojis: String
     hashtags(limit: Int): String
-    domains: String
+    domains(limit: Int): String
   }
 
   type TweetTimeWindow{
@@ -27,8 +27,8 @@ const typeDefs = gql`
 
   type PercentageTweetsContaining{
     emojis: Float
-    URLs: Float
-    photoURLs: Float
+    domains: Float
+    photos: Float
   }
 `
 
@@ -37,21 +37,21 @@ const resolvers = {
     totalTweetsReceived: (root, args, store) => store.totalTweets(),
     tweetsPer: () => ({
 
-        hour: () => {},
-        minute: () => {},
-        second: () => {},
+        hour:   (args, store) => store.tweetsPer('hour'),
+        minute: (args, store) => store.tweetsPer('minute'),
+        second: (args, store) => store.tweetsPer('second'),
     }), 
     top: () => ({
 
       emojis: () => {},
       hashtags: (args, store) => store.topHashtags(args.limit),
-      domains: () => "https://example.com",
+      domains: (args, store) => store.topDomains(args.limit),
     }),
     percentageContaining: () => ({
 
-      emojis: () => {},
-      URLs: () => {},
-      photoURLs: () => {},
+      emojis: (args, store) => store.percentTweetsWith('emojis'),
+      domains: (args, store) => store.percentTweetsWith('domains'),
+      photos: (args, store) => store.percentTweetsWith('photos'),
     }),
   },    
 }
