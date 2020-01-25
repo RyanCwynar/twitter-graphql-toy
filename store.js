@@ -14,7 +14,7 @@ class Tweet{
     this.hashtags = Tweet.parseHashtags(entities)
     this.domains = Tweet.parseDomains(entities)
     this.photos = Tweet.parsePhotos(entities)
-    this.emojis = []
+    this.emojis = Tweet.parseEmojis(text)
   }
 
   get hasHashtags(){
@@ -51,6 +51,11 @@ class Tweet{
       .map( m => m.media_url_https || m.media_url)
   }
 
+  static parseEmojis(text){
+    if(!text) return []
+    return text.match(/(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])/g) || []
+  }
+
   static count(tweets, attr = 'hasDomain'){
     return tweets.reduce( (count, tweet) => {
       if(tweet[attr])
@@ -64,10 +69,9 @@ class TweetStore {
   constructor(){
     this.lastIndex = 0
     this.tweets = []
-    this.emojis = []
+    this.emojis = {}
     this.hashtags = {}
     this.domains = {}
-    this.photos = []
   }
 
   get tweetsWithDomains(){
@@ -103,6 +107,7 @@ class TweetStore {
 
     this.addHashtags(tweet)
     this.addDomains(tweet)
+    this.addEmojis(tweet)
   }
 
   addHashtags(tweet){
@@ -123,6 +128,16 @@ class TweetStore {
         this.domains[domain] += 1
       } else {
         this.domains[domain] = 1
+      }
+    })
+  }
+
+  addEmojis(tweet){
+    tweet.emojis.map(key => {
+      if(this.emojis[key]){
+        this.emojis[key] += 1
+      } else {
+        this.emojis[key] = 1
       }
     })
   }
@@ -188,6 +203,13 @@ class TweetStore {
   topDomains(limit = 10){
 
     let arr = TweetStore.getTopItems(this.domains)
+  
+    return TweetStore.outputTopItems(arr, limit)
+  }
+
+  topEmojis(limit = 10){
+    
+    let arr = TweetStore.getTopItems(this.emojis)
   
     return TweetStore.outputTopItems(arr, limit)
   }

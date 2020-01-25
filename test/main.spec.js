@@ -35,7 +35,10 @@ describe("Twitter API exercise", function(){
     done()
   })
 
-  it("should identify most frequent emojis")
+  it("should identify most frequent emojis", function(done){
+    assert.ok(store.topEmojis(), 'Should be a comma separated list of emojis')
+    done()
+  })
 
   it("should identify trending hashtags", function(done){
     assert.ok(store.topHashtags(), 'Should be a comma separated list of hashtags')
@@ -47,7 +50,7 @@ describe("Twitter API exercise", function(){
     done()
   })
 
-  it.skip("should calculate percentage of tweets that contain emojis", function(done){
+  it("should calculate percentage of tweets that contain emojis", function(done){
     assert.ok(store.percent(store.tweetsWithEmojis))
     done()
   })

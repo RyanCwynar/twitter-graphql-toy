@@ -14,7 +14,7 @@ const typeDefs = gql`
   }
 
   type TrendingOccurencesOf{
-    emojis: String
+    emojis(limit: Int): String
     hashtags(limit: Int): String
     domains(limit: Int): String
   }
@@ -43,7 +43,7 @@ const resolvers = {
     }), 
     trending: () => ({
 
-      emojis: () => {},
+      emojis: (args, store) => store.topEmojis(args.limit),
       hashtags: (args, store) => store.topHashtags(args.limit),
       domains: (args, store) => store.topDomains(args.limit),
     }),
