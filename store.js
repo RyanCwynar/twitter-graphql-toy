@@ -16,9 +16,11 @@ class TweetStore {
       text,
     }
   }
+  
   static parseHashtags(tweet){
     return tweet.text.split(' ').filter(str=>str.match(/^#.*/))
   }
+
   addTweet(rawTweet){
     const tweet = TweetStore.filterIncoming(rawTweet)
     this.tweets.push(tweet)
@@ -43,17 +45,23 @@ class TweetStore {
 
   static outputTags(arr, limit){
     arr = arr.slice(0, limit)
+
+    // Output: #Example - 5, #Another - 3, #StillMore - 1 ...
     return arr.reduce((acc, next, i) => (i) ? `${acc}, ${next.tag} - ${next.count}` : `${next.tag} - ${next.count}`, ``)
   }
 
   topHashtags(limit = 10){
+
     let n = Object.keys(this.hashtags).length
     let top = new Array(n)
     let i = 0
+
     for (let tag in this.hashtags){
       top[i] = { tag, count: this.hashtags[tag] }
       i++
     }
+
+    // sort descending
     top.sort(function(a,b){ return b.count - a.count })
   
     return TweetStore.outputTags(top, limit)

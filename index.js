@@ -1,24 +1,8 @@
 require('dotenv').config()
-const Twitter = require('twitter')
 const { ApolloServer, gql } = require('apollo-server')
 const store = require('./store')
 
-const client = new Twitter({
-  consumer_key: process.env.API_KEY,
-  consumer_secret: process.env.API_SECRET,
-  access_token_key: process.env.ACCESS_TOKEN,
-  access_token_secret: process.env.ACCESS_TOKEN_SECRET
-});
-
-const stream = client.stream('statuses/sample')
-
-stream.on('data', function(event){
-  store.addTweet(event)
-})
-
-stream.on('error', function(error){
-  throw error
-})
+require('./twitter')(store)
 
 const typeDefs = gql`
 
@@ -47,30 +31,28 @@ const typeDefs = gql`
     photoURLs: Float
   }
 `
+
 const resolvers = {
   Query: {
-    totalTweetsReceived: (root, args, store) => {
-      return store.totalTweets()
-    },
-    tweetsPer: {
-      hour: () => {},
-      minute: () => {},
-      second: () => {},
-    },
-    top(){
-      return {
-        emojis: () => {},
-        hashtags: (args, store) => {
-          return store.topHashtags(args.limit)
-        },
-        domains: () => { return "https://example.com" },
-      }
-    },
-    percentageContaining: {
+    totalTweetsReceived: (root, args, store) => store.totalTweets(),
+    tweetsPer: () => ({
+
+        hour: () => {},
+        minute: () => {},
+        second: () => {},
+    }), 
+    top: () => ({
+
+      emojis: () => {},
+      hashtags: (args, store) => store.topHashtags(args.limit),
+      domains: () => "https://example.com",
+    }),
+    percentageContaining: () => ({
+
       emojis: () => {},
       URLs: () => {},
       photoURLs: () => {},
-    },
+    }),
   },    
 }
 
@@ -81,4 +63,6 @@ const server = new ApolloServer({
   context: store
 })
 
-server.listen(process.env.PORT).then(() => { console.log(`Listening on ${process.env.PORT}`) })
+server.listen(process.env.PORT).then(() => {
+  console.log(`Listening on ${process.env.PORT}`) 
+})
