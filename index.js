@@ -9,11 +9,11 @@ const typeDefs = gql`
   type Query{
     totalTweetsReceived: Int
     tweetsPer: TweetTimeWindow
-    top: TopOccurencesOf
+    trending: TrendingOccurencesOf
     percentageContaining: PercentageTweetsContaining
   }
 
-  type TopOccurencesOf{
+  type TrendingOccurencesOf{
     emojis: String
     hashtags(limit: Int): String
     domains(limit: Int): String
@@ -41,7 +41,7 @@ const resolvers = {
         minute: (args, store) => store.tweetsPer('minute'),
         second: (args, store) => store.tweetsPer('second'),
     }), 
-    top: () => ({
+    trending: () => ({
 
       emojis: () => {},
       hashtags: (args, store) => store.topHashtags(args.limit),
@@ -49,9 +49,9 @@ const resolvers = {
     }),
     percentageContaining: () => ({
 
-      emojis: (args, store) => store.percentTweetsWith('emojis'),
-      domains: (args, store) => store.percentTweetsWith('domains'),
-      photos: (args, store) => store.percentTweetsWith('photos'),
+      emojis: (args, store) => store.percent(store.tweetsWithEmojis),
+      domains: (args, store) => store.percent(store.tweetsWithDomains),
+      photos: (args, store) => store.percent(store.tweetsWithPhotos),
     }),
   },    
 }

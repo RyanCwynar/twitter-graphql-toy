@@ -1,49 +1,105 @@
 
 const EMOJIS = require('emoji-datasource-twitter')
+
+const HAS_DOMAIN = 'hasDomain'
+const HAS_PHOTO = 'hasPhoto'
+const HAS_EMOJIS = 'hasEmojis'
+class Tweet{
+
+  constructor({ created_at, text, entities }){
+
+    this.created_at = created_at
+    this.timestamp = new Date(created_at).getTime(),
+    this.text = text 
+    this.hashtags = Tweet.parseHashtags(entities)
+    this.domains = Tweet.parseDomains(entities)
+    this.photos = Tweet.parsePhotos(entities)
+    this.emojis = []
+  }
+
+  get hasHashtags(){
+    return this.hashtags.length > 0
+  }
+
+  get [HAS_DOMAIN](){
+    return this.domains.length > 0
+  }
+
+  get [HAS_PHOTO](){
+    return this.photos.length > 0
+  }
+
+  get [HAS_EMOJIS](){
+    return this.emojis.length > 0
+  }
+
+  static parseHashtags(entities){
+
+    return entities.hashtags.map( tag => tag.text) 
+  }
+
+  static parseDomains(entities){
+
+    return entities.urls.map( block => block.expanded_url)
+  }
+
+  static parsePhotos(entities){
+
+    if(!entities.media) return []
+    return entities.media
+      .filter( m =>m.type == `photo`)
+      .map( m => m.media_url_https || m.media_url)
+  }
+
+  static count(tweets, attr = 'hasDomain'){
+    return tweets.reduce( (count, tweet) => {
+      if(tweet[attr])
+        count++
+      return count
+    }, 0)
+  }
+}
 class TweetStore {
 
   constructor(){
+    this.lastIndex = 0
     this.tweets = []
     this.emojis = []
     this.hashtags = {}
-    this.domains = []
-    this.photoURLs = []
+    this.domains = {}
+    this.photos = []
+  }
 
-    this.tweetsWith = {
-      domains: 0,
-      emojis: 0,
-      photoURLs: 0
+  get tweetsWithDomains(){
+    return Tweet.count(this.tweets, HAS_DOMAIN)
+  }
+
+  get tweetsWithPhotos(){
+    return Tweet.count(this.tweets, HAS_PHOTO)
+  }
+
+  get tweetsWithEmojis(){
+    return Tweet.count(this.tweets, HAS_EMOJIS)
+  }
+ 
+  _pushTweet(tweet){
+    this.nextIndex = this.nextIndex + 1 % 10000
+    if(this.totalTweets() < 10000){
+      this.tweets.push(tweet)
+    } else {
+      this.tweets[this.nextIndex] = tweet
     }
   }
 
-  static filterIncoming({ created_at, text }){
-
-    return {
-      created_at,
-      timestamp: new Date(created_at).getTime(),
-      text,
-    }
-  }
-  
-  static parseHashtags(tweet){
-
-    return tweet.text.split(' ').filter(str => str.match(/^#.*/))
-  }
-
-  static parseDomains(tweet){
-
-    return tweet.text.split(' ').filter(str=>str.match(/(https?:\/\/[^\s]+)/))
-  }
-
-  percentTweetsWith(type = 'domains'){
-    let n = (this.tweetsWith[type]) ? this.tweetsWith[type] : 0
+  percent(n){
     return Math.round(n / this.totalTweets() * 100)
   }
 
   addTweet(rawTweet){
 
-    const tweet = TweetStore.filterIncoming(rawTweet)
-    this.tweets.push(tweet)
+    const tweet = new Tweet(rawTweet)
+
+    this._pushTweet(tweet)
 
     this.addHashtags(tweet)
     this.addDomains(tweet)
@@ -51,8 +107,7 @@ class TweetStore {
 
   addHashtags(tweet){
 
-    const tags = TweetStore.parseHashtags(tweet)
-    tags.map(tag => {
+    tweet.hashtags.map(tag => {
       if(this.hashtags[tag]){
         this.hashtags[tag] += 1
       } else {
@@ -63,11 +118,7 @@ class TweetStore {
 
   addDomains(tweet){
 
-    const domains = TweetStore.parseDomains(tweet)
-
-    if(domains.length > 0) this.tweetsWith.domains++
-
-    domains.map(domain => {
+    tweet.domains.map(domain => {
       if(this.domains[domain]){
         this.domains[domain] += 1
       } else {
@@ -82,6 +133,7 @@ class TweetStore {
   }
 
   tweetsPer(unit = 'minute'){
+
     const n = this.totalTweets()
     const sample = Math.min(1000, n)
     const earliest = this.tweets[Math.max(0, n - 1000)].timestamp
@@ -105,10 +157,10 @@ class TweetStore {
   }
 
   static outputTopItems(arr, limit){
+
     arr = arr.slice(0, limit)
 
-    // Output: #Example - 5, #Another - 3, #StillMore - 1 ...
-    return arr.reduce((acc, next, i) => (i) ? `${acc}, ${next.name} - ${next.count}` : `${next.name} - ${next.count}`, ``)
+    return arr.reduce((acc, next, i) => (i) ? `${acc}, ${next.name}` : `${next.name}`, ``)
   }
 
   static getTopItems(arr){
