@@ -31,7 +31,7 @@ const typeDefs = gql`
 
   type TopOccurencesOf{
     emojis: String
-    hashtags: String
+    hashtags(limit: Int): String
     domains: String
   }
 
@@ -57,10 +57,14 @@ const resolvers = {
       minute: () => {},
       second: () => {},
     },
-    top: {
-      emojis: () => {},
-      hashtags: () => {},
-      domains: () => {},
+    top(){
+      return {
+        emojis: () => {},
+        hashtags: (args, store) => {
+          return store.topHashtags(args.limit)
+        },
+        domains: () => { return "https://example.com" },
+      }
     },
     percentageContaining: {
       emojis: () => {},
