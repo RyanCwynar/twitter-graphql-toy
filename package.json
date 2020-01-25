@@ -4,13 +4,19 @@
   "description": "Sampling the Twitter stream and calculating various statistics",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "test": "mocha",
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "apollo-server": "^2.9.16",
     "dotenv": "^8.2.0",
+    "emoji-datasource-twitter": "^5.0.1",
     "express": "^4.17.1",
     "twitter": "^1.7.1"
+  },
+  "devDependencies": {
+    "mocha": "^7.0.0"
   }
 }
