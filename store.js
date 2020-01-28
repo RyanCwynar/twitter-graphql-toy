@@ -64,8 +64,9 @@ class TweetStore {
   }
 
   updateCounts(tweet){
+    
     this.totalTweetsProcessed++
-    this.pubsub.publish(NEW_TWEET, { totalTweets: this.totalTweetsProcessed })
+
     if(tweet.has('hashtags')) this.tweetsWith.hashtags++
     if(tweet.has('domains')) this.tweetsWith.domains++
     if(tweet.has('emojis')) this.tweetsWith.emojis++
