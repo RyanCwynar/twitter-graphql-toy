@@ -43,7 +43,7 @@ const MAX_TWEETS_IN_MEMORY = 1000
 class TweetStore {
 
   constructor(){
-    this._currIndex = -1
+    this.currIndex = -1
     this.tweets = []
     this.emojis = {}
     this.hashtags = {}
@@ -66,18 +66,23 @@ class TweetStore {
     if(tweet.has('domains')) this.tweetsWith.domains++
     if(tweet.has('emojis')) this.tweetsWith.emojis++
     if(tweet.has('photos')) this.tweetsWith.photos++
+
+    this.add('hashtags', tweet)
+    this.add('domains', tweet)
+    this.add('emojis', tweet)
+    this.add('photos', tweet)
   }
  
-  _nextIndex(){
-    return (this._currIndex + 1) % MAX_TWEETS_IN_MEMORY 
+  nextIndex(){
+    return (this.currIndex + 1) % MAX_TWEETS_IN_MEMORY 
   }
 
-  _pushTweet(tweet){
-    this._currIndex = this._nextIndex()
+  pushTweet(tweet){
+    this.currIndex = this.nextIndex()
     if(this.tweets.length < MAX_TWEETS_IN_MEMORY){
       this.tweets.push(tweet)
     } else {
-      this.tweets[this._currIndex] = tweet
+      this.tweets[this.currIndex] = tweet
     }
   }
 
@@ -93,14 +98,9 @@ class TweetStore {
 
     const tweet = new Tweet(rawTweet)
 
-    this._pushTweet(tweet)
+    this.pushTweet(tweet)
 
     this.updateCounts(tweet)
-    
-    this.add('hashtags', tweet)
-    this.add('domains', tweet)
-    this.add('emojis', tweet)
-    this.add('photos', tweet)
   }
 
   add(type, tweet){
@@ -118,12 +118,12 @@ class TweetStore {
     if(this.tweets.length < MAX_TWEETS_IN_MEMORY)
       return this.tweets[0]
     else 
-      return this.tweets[this._nextIndex()]
+      return this.tweets[this.nextIndex()]
   }
 
   latestTweet(){
 
-    return this.tweets[this._currIndex]
+    return this.tweets[this.currIndex]
   }
 
   tweetsPer(unit = 'minute'){
