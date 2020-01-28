@@ -8,21 +8,22 @@ const typeDefs = gql`
 
   type Query{
     totalTweetsReceived: Int
-    tweetsPer: TweetTimeWindow
-    trending: TrendingOccurencesOf
+    tweetsPer: Timeframes
+    top: TrendingOccurencesOf
     percentageContaining: PercentageTweetsContaining
+  }
+  
+  type Timeframes{
+    hour: Int
+    minute: Int
+    second: Int
   }
 
   type TrendingOccurencesOf{
     emojis(limit: Int): String
     hashtags(limit: Int): String
     domains(limit: Int): String
-  }
-
-  type TweetTimeWindow{
-    hour: Int
-    minute: Int
-    second: Int
+    photos(limit: Int): String
   }
 
   type PercentageTweetsContaining{
@@ -34,24 +35,24 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    totalTweetsReceived: (root, args, store) => store.totalTweets(),
+    totalTweetsReceived: (root, args, store) => store.totalTweetsProcessed,
     tweetsPer: () => ({
+      hour: (args, store) => store.tweetsPer('hour'),
+      minute: (args, store) => store.tweetsPer('minute'),
+      second: (args, store) => store.tweetsPer('second'),
+    }),
+    top: () => ({
 
-        hour:   (args, store) => store.tweetsPer('hour'),
-        minute: (args, store) => store.tweetsPer('minute'),
-        second: (args, store) => store.tweetsPer('second'),
-    }), 
-    trending: () => ({
-
-      emojis: (args, store) => store.topEmojis(args.limit),
-      hashtags: (args, store) => store.topHashtags(args.limit),
-      domains: (args, store) => store.topDomains(args.limit),
+      emojis: (args, store) => store.top('emojis', args.limit),
+      hashtags: (args, store) => store.top('hashtags', args.limit),
+      domains: (args, store) => store.top('domains', args.limit),
+      photos: (args, store) => store.top('photos', args.limit),
     }),
     percentageContaining: () => ({
 
-      emojis: (args, store) => store.percent(store.tweetsWithEmojis),
-      domains: (args, store) => store.percent(store.tweetsWithDomains),
-      photos: (args, store) => store.percent(store.tweetsWithPhotos),
+      emojis: (args, store) => store.percentTweetsWith('emojis'),
+      domains: (args, store) => store.percentTweetsWith('domains'),
+      photos: (args, store) => store.percentTweetsWith('photos'),
     }),
   },    
 }

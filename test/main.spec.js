@@ -31,7 +31,7 @@ describe("Twitter API exercise", function(){
     
     assert.ok( perHour > perMinute, 'Should be more tweets per hour than per minute')
     assert.ok( perMinute > perSecond, 'Should be more tweets per minute than per second')
-    assert.ok( perSecond < 200, 'the sample stream averages ~50 per second so something is wrong if it is higher for some reason')
+    assert.ok( perSecond < 100, 'the sample stream averages ~50 per second')
     done()
   })
 
