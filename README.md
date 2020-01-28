@@ -34,7 +34,7 @@ query{
 ```
 
 You should get output that looks something like this:
-[./playground_screenshot.png]
+![query screenshot](./playground_screenshot.png)
 
 ## Technologies Used
 - Node
