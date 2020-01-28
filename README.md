@@ -34,7 +34,10 @@ query{
 ```
 
 You should get output that looks something like this:
+
 ![query screenshot](./playground_screenshot.png)
+
+The nature of GraphQL definitions makes their queries and options self-documenting, to see the various query requirements and options, simply click `Docs`, drill down to the desired data point and modify the query accordingly
 
 ## Technologies Used
 - Node
