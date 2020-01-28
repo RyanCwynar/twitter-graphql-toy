@@ -20,10 +20,10 @@ const typeDefs = gql`
   }
 
   type TrendingOccurencesOf{
-    emojis(limit: Int): String
-    hashtags(limit: Int): String
-    domains(limit: Int): String
-    photos(limit: Int): String
+    emojis(limit: Int): [String]
+    hashtags(limit: Int): [String]
+    domains(limit: Int): [String]
+    photos(limit: Int): [String]
   }
 
   type PercentageTweetsContaining{

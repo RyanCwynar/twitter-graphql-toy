@@ -1,8 +1,7 @@
 class Tweet{
 
   constructor({ created_at, text, entities }){
-
-    this.created_at = created_at
+  
     this.timestamp = new Date(created_at).getTime(),
     this.text = text 
     this.hashtags = Tweet.parseHashtags(entities)
@@ -44,7 +43,7 @@ const MAX_TWEETS_IN_MEMORY = 1000
 class TweetStore {
 
   constructor(){
-    this.currIndex = -1
+    this._currIndex = -1
     this.tweets = []
     this.emojis = {}
     this.hashtags = {}
@@ -61,8 +60,6 @@ class TweetStore {
     }
   }
 
-  
-
   updateCounts(tweet){
     this.totalTweetsProcessed++
     if(tweet.has('hashtags')) this.tweetsWith.hashtags++
@@ -71,16 +68,16 @@ class TweetStore {
     if(tweet.has('photos')) this.tweetsWith.photos++
   }
  
-  nextIndex(){
-    return (this.currIndex + 1) % MAX_TWEETS_IN_MEMORY 
+  _nextIndex(){
+    return (this._currIndex + 1) % MAX_TWEETS_IN_MEMORY 
   }
 
-  pushTweet(tweet){
-    this.currIndex = this.nextIndex()
+  _pushTweet(tweet){
+    this._currIndex = this._nextIndex()
     if(this.tweets.length < MAX_TWEETS_IN_MEMORY){
       this.tweets.push(tweet)
     } else {
-      this.tweets[this.currIndex] = tweet
+      this.tweets[this._currIndex] = tweet
     }
   }
 
@@ -96,7 +93,7 @@ class TweetStore {
 
     const tweet = new Tweet(rawTweet)
 
-    this.pushTweet(tweet)
+    this._pushTweet(tweet)
 
     this.updateCounts(tweet)
     
@@ -121,12 +118,12 @@ class TweetStore {
     if(this.tweets.length < MAX_TWEETS_IN_MEMORY)
       return this.tweets[0]
     else 
-      return this.tweets[this.nextIndex()]
+      return this.tweets[this._nextIndex()]
   }
 
   latestTweet(){
 
-    return this.tweets[this.currIndex]
+    return this.tweets[this._currIndex]
   }
 
   tweetsPer(unit = 'minute'){
@@ -157,7 +154,7 @@ class TweetStore {
 
     arr = arr.slice(0, limit)
 
-    return arr.reduce((acc, next, i) => (i) ? `${acc}, ${next.name}` : `${next.name}`, ``)
+    return arr.map(item=>item.name)
   }
 
   static getTopItems(arr){
