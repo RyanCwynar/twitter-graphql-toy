@@ -12,7 +12,7 @@ class TweetStore {
     this.domains = {}
     this.photos = {}
 
-    this.totalTweetsProcessed = 0
+    this.totalTweetsReceived = 0
 
     this.tweetsWith = {
       hashtags: 0,
@@ -24,7 +24,7 @@ class TweetStore {
 
   updateCounts(tweet){
 
-    this.totalTweetsProcessed++
+    this.totalTweetsReceived++
 
     if(tweet.has('hashtags')) this.tweetsWith.hashtags++
     if(tweet.has('domains')) this.tweetsWith.domains++
@@ -59,7 +59,7 @@ class TweetStore {
 
   percent(n){
 
-    return Math.round(n / this.totalTweetsProcessed * 100)
+    return Math.round(n / this.totalTweetsReceived * 100)
   }
 
   addTweet(rawTweet){

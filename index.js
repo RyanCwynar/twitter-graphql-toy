@@ -37,7 +37,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     latestTweet: (root, args, store) => store.tweets[store.currIndex].text,
-    totalTweetsReceived: (root, args, store) => store.totalTweetsProcessed,
+    totalTweetsReceived: (root, args, store) => store.totalTweetsReceived,
     tweetsPer: () => ({
       hour: (args, store) => store.tweetsPer('hour'),
       minute: (args, store) => store.tweetsPer('minute'),
