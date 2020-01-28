@@ -113,25 +113,25 @@ class TweetStore {
     })
   }
 
-  earliestTweet(){
+  earliestTweetTimestamp(){
 
     if(this.tweets.length < MAX_TWEETS_IN_MEMORY)
       return this.tweets[0]
     else 
-      return this.tweets[this.nextIndex()]
+      return this.tweets[this.nextIndex()].timestamp
   }
 
-  latestTweet(){
+  latestTweetTimestamp(){
 
-    return this.tweets[this.currIndex]
+    return this.tweets[this.currIndex].timestamp
   }
 
   tweetsPer(unit = 'minute'){
 
     const n = this.tweets.length
     const sample = Math.min(MAX_TWEETS_IN_MEMORY, n)
-    const { timestamp: earliest } = this.earliestTweet()
-    const { timestamp: latest } = this.latestTweet()
+    const earliest = this.earliestTweetTimestamp()
+    const latest = this.latestTweetTimestamp()
 
     let timeframe
 
