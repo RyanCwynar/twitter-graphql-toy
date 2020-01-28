@@ -7,6 +7,7 @@ require('./twitter')(store)
 const typeDefs = gql`
 
   type Query{
+    latestTweet: String
     totalTweetsReceived: Int
     tweetsPer: Timeframes
     top: TrendingOccurencesOf
@@ -35,6 +36,7 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
+    latestTweet: (root, args, store) => store.tweets[store.currIndex].text,
     totalTweetsReceived: (root, args, store) => store.totalTweetsProcessed,
     tweetsPer: () => ({
       hour: (args, store) => store.tweetsPer('hour'),
