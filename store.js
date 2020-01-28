@@ -45,7 +45,7 @@ const MAX_TWEETS_IN_MEMORY = 1000
 class TweetStore {
 
   constructor(){
-
+    
     this.currIndex = -1
     this.tweets = []
     this.emojis = {}
@@ -64,8 +64,8 @@ class TweetStore {
   }
 
   updateCounts(tweet){
-
     this.totalTweetsProcessed++
+    this.pubsub.publish(NEW_TWEET, { totalTweets: this.totalTweetsProcessed })
     if(tweet.has('hashtags')) this.tweetsWith.hashtags++
     if(tweet.has('domains')) this.tweetsWith.domains++
     if(tweet.has('emojis')) this.tweetsWith.emojis++
