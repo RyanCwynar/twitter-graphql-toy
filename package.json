@@ -14,7 +14,7 @@
     "apollo-server": "^2.9.16",
     "dotenv": "^8.2.0",
     "emoji-datasource-twitter": "^5.0.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
